@@ -22,10 +22,10 @@
             />
         <Button
             android:id="@+id/okBtn"
+            android:padding="10dp"
             android:background="@drawable/line_btn_t"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_weight="1"
             android:textSize="17dp"
             android:fontFamily="@font/notosans"
