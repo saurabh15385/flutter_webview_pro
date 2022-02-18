@@ -7,11 +7,15 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.hardware.display.DisplayManager;
 import android.net.Uri;
 import android.os.Build;
@@ -19,19 +23,33 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.GeolocationPermissions;
+import android.webkit.JsResult;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.webkit.JsPromptResult;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +66,8 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.platform.PlatformView;
 import util.FileUtil;
 import android.content.pm.PackageManager;
+
+import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler{
   private static final String TAG = "FlutterWebView";
@@ -67,9 +87,109 @@ public class FlutterWebView implements PlatformView, MethodCallHandler{
   private static final int REQUEST_CAMERA = 1;
   private static final int REQUEST_LOCATION = 100;
   private Uri cameraUri;
+  Dialog dilaog01;
+  public static Context context;
 
   // Verifies that a url opened by `Window.open` has a secure url.
   private class FlutterWebChromeClient extends WebChromeClient {
+    private Context mContext; // WebChromeClient를 호출한 Context
+    private AlertDialog mAlertDialog; // 경고창을 띄울 Dialog
+    private final String APP_NAME = "Dr.G"; // 경고창 제목
+    int width = WebViewFlutterPlugin.activity.getResources().getDisplayMetrics().widthPixels;
+
+    /** * 생성자 * @param context WebChromeClient를 호출한 Context */
+    public FlutterWebChromeClient(Context context){
+      mContext = context;
+    }
+
+
+    //jsalert
+    @Override
+    public boolean onJsAlert(WebView view, String url, String message, final JsResult result) {
+      LayoutInflater inflater = (LayoutInflater)WebViewFlutterPlugin.activity.getSystemService(LAYOUT_INFLATER_SERVICE);
+      View view_dialog02 = inflater.inflate(R.layout.activity_dialog02, null);
+
+
+      if(mAlertDialog == null){
+        Button okBtn = view_dialog02.findViewById(R.id.okBtn);
+        okBtn.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            result.confirm(); mAlertDialog.dismiss(); mAlertDialog = null;
+          }
+        });
+
+        TextView title = view_dialog02.findViewById(R.id.alert_title);
+        title.setText(message);
+
+        mAlertDialog = new AlertDialog.Builder(mContext)
+                .setCancelable(false) .create(); }
+
+
+        mAlertDialog.show();
+
+        mAlertDialog.setContentView(view_dialog02);
+
+      WindowManager.LayoutParams lp = mAlertDialog.getWindow().getAttributes();
+      lp.width = width - 150;
+      lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+      mAlertDialog.getWindow().setAttributes(lp);
+
+      return true;
+
+    }
+
+
+    //jsconfirm
+
+
+    @Override
+    public boolean onJsConfirm(WebView view, String url, String message, final JsResult result) {
+      LayoutInflater inflater = (LayoutInflater)WebViewFlutterPlugin.activity.getSystemService(LAYOUT_INFLATER_SERVICE);
+      View view_dialog03 = inflater.inflate(R.layout.activity_dialog03, null);
+
+
+
+      if(mAlertDialog == null){
+        Button okBtn = view_dialog03.findViewById(R.id.okBtn);
+        okBtn.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            result.confirm(); mAlertDialog.dismiss(); mAlertDialog = null;
+          }
+        });
+
+        Button noBtn = view_dialog03.findViewById(R.id.noBtn);
+        noBtn.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            result.cancel(); mAlertDialog.dismiss(); mAlertDialog = null;
+          }
+        });
+
+        TextView title = view_dialog03.findViewById(R.id.alert_title);
+        title.setText(message);
+
+        mAlertDialog = new AlertDialog.Builder(mContext)
+
+                .setCancelable(false) .create(); }
+
+
+
+
+      mAlertDialog.show();
+
+      mAlertDialog.setContentView(view_dialog03);
+
+      WindowManager.LayoutParams lp = mAlertDialog.getWindow().getAttributes();
+      lp.width = width - 150;
+      lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+      mAlertDialog.getWindow().setAttributes(lp);
+
+
+      return true;
+    }
+
     @Override
     public boolean onCreateWindow(
             final WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
@@ -143,14 +263,24 @@ public class FlutterWebView implements PlatformView, MethodCallHandler{
       Log.v(TAG, "openFileChooser Android >= 5.0");
       uploadMessageAboveL = filePathCallback;
       takePhotoOrOpenGallery();
+
+
       return true;
+
+
     }
+
 
     @Override
     public void onGeolocationPermissionsShowPrompt(final String origin, final GeolocationPermissions.Callback callback) {
       callback.invoke(origin, true, false);
       super.onGeolocationPermissionsShowPrompt(origin, callback);
     }
+
+
+
+
+
   }
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -182,7 +312,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler{
 
     // Multi windows is set with FlutterWebChromeClient by default to handle internal bug: b/159892679.
     webView.getSettings().setSupportMultipleWindows(true);
-    webView.setWebChromeClient(new FlutterWebChromeClient());
+    webView.setWebChromeClient(new FlutterWebChromeClient(context));
 
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     methodChannel.setMethodCallHandler(this);
@@ -207,6 +337,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler{
       webView.loadUrl(url);
     }
   }
+
+
 
   @Override
   public View getView() {
@@ -377,7 +509,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler{
     }
     webView.evaluateJavascript(
             jsString,
-            new android.webkit.ValueCallback<String>() {
+            new ValueCallback<String>() {
               @Override
               public void onReceiveValue(String value) {
                 result.success(value);
@@ -532,49 +664,170 @@ public class FlutterWebView implements PlatformView, MethodCallHandler{
   }
 
 
-  private void openImageChooserActivity() {
-    Log.v(TAG, "openImageChooserActivity");
-    Intent intent1 = new Intent(Intent.ACTION_GET_CONTENT);
-    intent1.addCategory(Intent.CATEGORY_OPENABLE);
-    intent1.setType("*/*");
 
-    Intent chooser = new Intent(Intent.ACTION_CHOOSER);
-    chooser.putExtra(Intent.EXTRA_TITLE, WebViewFlutterPlugin.activity.getString(R.string.select_picture));
-    chooser.putExtra(Intent.EXTRA_INTENT, intent1);
-    if (WebViewFlutterPlugin.activity != null){
-      WebViewFlutterPlugin.activity.startActivityForResult(chooser, FILE_CHOOSER_RESULT_CODE);
-    } else {
-      Log.v(TAG, "activity is null");
-    }
+
+
+
+  public void onCustomDialog() {
+    final Dialog dialog1 = new Dialog(WebViewFlutterPlugin.activity);
+    dialog1.setContentView(R.layout.activity_dialog01);
+    dialog1.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+    dialog1.getWindow().setGravity(Gravity.BOTTOM);
+    int width = WebViewFlutterPlugin.activity.getResources().getDisplayMetrics().widthPixels;
+    dialog1.getWindow().setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+
+    Button noBtn = dialog1.findViewById(R.id.cameraBtn);
+    noBtn.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        // 원하는 기능 구현
+        dialog1.dismiss();
+        openCamera();
+      }
+    });
+    // 네 버튼
+    dialog1.findViewById(R.id.galleryBtn).setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        // 원하는 기능 구현
+        dialog1.dismiss();
+        openImageChooserActivity();
+      }
+    });
+
+    dialog1.show();
   }
+
+
 
   private void takePhotoOrOpenGallery() {
     if (WebViewFlutterPlugin.activity==null||!FileUtil.checkSDcard(WebViewFlutterPlugin.activity)) {
+      Log.v(TAG, "takePhotoOrOpenGallery null");
       return;
     }
-    String[] selectPicTypeStr = {WebViewFlutterPlugin.activity.getString(R.string.take_photo),
-            WebViewFlutterPlugin.activity.getString(R.string.photo_library)};
-    new AlertDialog.Builder(WebViewFlutterPlugin.activity)
-            .setOnCancelListener(new ReOnCancelListener())
-            .setItems(selectPicTypeStr,
-                    new DialogInterface.OnClickListener() {
-                      @Override
-                      public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                          // 相机拍摄
-                          case 0:
-                            openCamera();
-                            break;
-                          // 手机相册
-                          case 1:
-                            openImageChooserActivity();
-                            break;
-                          default:
-                            break;
-                        }
-                      }
-                    }).show();
+
+    //    if (uploadMessageAboveL != null) {
+//      uploadMessageAboveL.onReceiveValue(null);
+//    }
+
+
+
+//    String[] selectPicTypeStr = {WebViewFlutterPlugin.activity.getString(R.string.take_photo),
+//            WebViewFlutterPlugin.activity.getString(R.string.photo_library)};
+//    new AlertDialog.Builder(WebViewFlutterPlugin.activity)
+//            .setOnCancelListener(new ReOnCancelListener())
+//            .setItems(selectPicTypeStr,
+//                    new DialogInterface.OnClickListener() {
+//                      @Override
+//                      public void onClick(DialogInterface dialog, int which) {
+//                        switch (which) {
+//                          // 相机拍摄
+//                          case 0:
+//                            openCamera();
+//                            break;
+//                          // 手机相册
+//                          case 1:
+//                            openImageChooserActivity();
+//                            break;
+//                          default:
+//                            break;
+//                        }
+//                      }
+//                    }).show();
+
+
+
+
+
+    int width = WebViewFlutterPlugin.activity.getResources().getDisplayMetrics().widthPixels;
+
+    LayoutInflater inflater = (LayoutInflater)WebViewFlutterPlugin.activity.getSystemService(LAYOUT_INFLATER_SERVICE);
+    View view = inflater.inflate(R.layout.activity_dialog01, null);
+
+
+    final AlertDialog.Builder builder = new AlertDialog.Builder(WebViewFlutterPlugin.activity);
+    builder .setOnCancelListener(new ReOnCancelListener())
+              ;
+
+    final AlertDialog dialog = builder.create();
+    dialog.setOnCancelListener(new ReOnCancelListener());
+
+    dialog.getWindow().setGravity(Gravity.BOTTOM);
+    dialog.getWindow().setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+
+
+
+    ImageButton cameraBtn = view.findViewById(R.id.image_camera);
+    cameraBtn.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        // 원하는 기능 구현
+        dialog.dismiss();
+        openCamera();
+      }
+    });
+
+    ImageButton galleryBtn = view.findViewById(R.id.image_gallery);
+    galleryBtn.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        // 원하는 기능 구현
+        dialog.dismiss();
+        openImageChooserActivity();
+      }
+    });
+
+
+    Button cameraBtn1 = view.findViewById(R.id.cameraBtn);
+    cameraBtn1.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        // 원하는 기능 구현
+        dialog.dismiss();
+        openCamera();
+      }
+    });
+
+    Button galleryBtn1 = view.findViewById(R.id.galleryBtn);
+    galleryBtn1.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        // 원하는 기능 구현
+        dialog.dismiss();
+        openImageChooserActivity();
+      }
+    });
+
+
+
+
+
+    dialog.show();
+
+    ViewGroup.LayoutParams params =dialog.getWindow().getAttributes();
+    params.width = width;
+    dialog.getWindow().setAttributes((WindowManager.LayoutParams) params);
+//    dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND); //배경 투명하게
+//    dialog.getWindow().setDimAmount(0f);
+//    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+//    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.argb(0, 200, 200, 200)));
+    dialog.setContentView(view);
+
+
+//    Drawable bgDrawable = new ColorDrawable(0x00000000);
+//    dialog.getWindow().getDecorView().findViewById(android.R.id.content).setBackground(bgDrawable);
+//    dialog.getWindow().setBackgroundDrawable(bgDrawable);
+
+//    onCustomDialog();
+    
+    
+
+   
   }
+
+
 
   /**
    * Check if the calling context has a set of permissions.
@@ -610,6 +863,23 @@ public class FlutterWebView implements PlatformView, MethodCallHandler{
 
     return true;
   }
+
+  private void openImageChooserActivity() {
+    Log.v(TAG, "openImageChooserActivity");
+    Intent intent1 = new Intent(Intent.ACTION_GET_CONTENT);
+    intent1.addCategory(Intent.CATEGORY_OPENABLE);
+    intent1.setType("*/*");
+
+    Intent chooser = new Intent(Intent.ACTION_CHOOSER);
+    chooser.putExtra(Intent.EXTRA_TITLE, WebViewFlutterPlugin.activity.getString(R.string.select_picture));
+    chooser.putExtra(Intent.EXTRA_INTENT, intent1);
+    if (WebViewFlutterPlugin.activity != null){
+      WebViewFlutterPlugin.activity.startActivityForResult(chooser, FILE_CHOOSER_RESULT_CODE);
+    } else {
+      Log.v(TAG, "activity is null");
+    }
+  }
+  
 
   /**
    * 打开照相机
