@@ -1,7 +1,7 @@
 <resources>
-    <string name="take_photo">카메라 실행</string>
-    <string name="photo_library">갤러리 실행</string>
-    <string name="select_picture">사진 선택</string>
-    <string name="take_pic_need_permission">카메라/갤러리 실행 권한을 추가해 주세요.</string>
+    <string name="take_photo">Capture Image</string>
+    <string name="photo_library">Files</string>
+    <string name="select_picture">Select File</string>
+    <string name="take_pic_need_permission">Taking pictures need you to grant camera permission</string>
 
 </resources>
