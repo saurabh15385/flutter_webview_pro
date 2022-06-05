@@ -36,7 +36,7 @@
             android:padding="10dp"
             android:background="@null"
             android:fontFamily="@font/notosans"
-            android:text="카메라 실행" />
+            android:text="Capture Image" />
 
     </LinearLayout>
     <LinearLayout
@@ -63,7 +63,7 @@
             android:padding="10dp"
 
             android:fontFamily="@font/notosans"
-            android:text="갤러리 실행" />
+            android:text="Files" />
     </LinearLayout>
 
 </LinearLayout>
