@@ -29,7 +29,7 @@
             android:layout_weight="1"
             android:textSize="17dp"
             android:fontFamily="@font/notosans"
-            android:text="확인" />
+            android:text="Confirm" />
 
 
 </LinearLayout>
