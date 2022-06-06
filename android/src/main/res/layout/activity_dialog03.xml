@@ -45,7 +45,7 @@
                             android:textSize="17dp"
                             android:padding="10dp"
                             android:fontFamily="@font/notosans"
-                            android:text="확인" />
+                            android:text="Confirm" />
 
                 </LinearLayout>
                 <LinearLayout
@@ -64,7 +64,7 @@
                             android:layout_weight="1"
                             android:textSize="17dp"
                             android:fontFamily="@font/notosans"
-                            android:text="취소" />
+                            android:text="Cancel" />
                 </LinearLayout>
 
         </LinearLayout>
