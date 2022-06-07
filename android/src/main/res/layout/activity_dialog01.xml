@@ -23,8 +23,8 @@
         <ImageButton
             android:id="@+id/image_camera"
             android:layout_marginTop="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
             android:background="@drawable/round_bg"
             android:src="@drawable/ic_baseline_photo_camera_24"/>
 
@@ -49,8 +49,8 @@
         <ImageButton
             android:id="@+id/image_gallery"
             android:layout_marginTop="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
             android:background="@drawable/round_bg"
             android:src="@drawable/ic_baseline_folder_24"/>
 
