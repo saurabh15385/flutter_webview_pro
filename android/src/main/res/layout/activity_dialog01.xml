@@ -17,14 +17,15 @@
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:background="@drawable/line_btn_l"
         android:orientation="vertical">
 
         <ImageButton
             android:id="@+id/image_camera"
             android:layout_marginTop="10dp"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:gravity="center"
             android:background="@drawable/round_bg"
             android:src="@drawable/ic_baseline_photo_camera_24"/>
@@ -44,14 +45,15 @@
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:background="@drawable/line_btn_r"
         android:orientation="vertical">
 
         <ImageButton
             android:id="@+id/image_gallery"
             android:layout_marginTop="10dp"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:gravity="center"
             android:background="@drawable/round_bg"
             android:src="@drawable/ic_baseline_folder_24"/>
